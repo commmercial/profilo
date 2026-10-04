@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>profilo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+<div class="brand"><span class="brand-dot"></span><span>profilo</span></div>
+<div class="nav">
+<button class="nav-item active" data-panel="general">General</button>
+<button class="nav-item" data-panel="background">Background</button>
+<button class="nav-item" data-panel="cursor">Cursor</button>
+<button class="nav-item" data-panel="entry">Entry screen</button>
+<button class="nav-item" data-panel="cards">Cards</button>
+<button class="nav-item" data-panel="apps">Applications</button>
+</div>
+<div class="sidebar-bottom">
+<button id="resetBtn" class="ghost-btn">Reset</button>
+<button id="exportBtn" class="primary-btn">Export</button>
+</div>
+</aside>
+<main class="workspace">
+<header class="topbar">
+<div>
+<div class="eyebrow">PROFILE EDITOR</div>
+<h1 id="panelTitle">General</h1>
+</div>
+<div class="top-actions">
+<button id="desktopBtn" class="device-btn active">Desktop</button>
+<button id="mobileBtn" class="device-btn">Mobile</button>
+</div>
+</header>
+<section class="content">
+<div class="controls">
+<div class="panel active" id="panel-general">
+<div class="section">
+<h2>Profile</h2>
+<label>Name<input id="nameInput" type="text"></label>
+<label>Bio<textarea id="bioInput" rows="3"></textarea></label>
+<label>Profile picture URL<input id="pfpInput" type="text"></label>
+</div>
+<div class="section">
+<h2>Accent</h2>
+<label>Accent color<input id="accentInput" type="color"></label>
+<label>Card opacity<input id="opacityInput" type="range" min="0.05" max="1" step="0.01"></label>
+</div>
+</div>
+<div class="panel" id="panel-background">
+<div class="section">
+<h2>Background</h2>
+<label>Video URL<input id="videoInput" type="text" placeholder="background.mp4"></label>
+<label>Fallback image URL<input id="imageInput" type="text"></label>
+<label>Brightness<input id="brightnessInput" type="range" min="0.1" max="1" step="0.01"></label>
+<label>Saturation<input id="saturationInput" type="range" min="0" max="2" step="0.01"></label>
+</div>
+</div>
+<div class="panel" id="panel-cursor">
+<div class="section">
+<h2>Cursor</h2>
+<label class="switch-row"><span>Custom cursor</span><input id="cursorEnabled" type="checkbox"><span class="switch"></span></label>
+<label>Cursor image URL<input id="cursorInput" type="text"></label>
+<label>Animation<select id="cursorAnim"><option value="smooth">Smooth</option><option value="pulse">Pulse</option><option value="ring">Ring</option><option value="none">None</option></select></label>
+</div>
+</div>
+<div class="panel" id="panel-entry">
+<div class="section">
+<h2>Entry screen</h2>
+<label>Title<input id="entryTitleInput" type="text"></label>
+<label>Notice<textarea id="entryNoticeInput" rows="3"></textarea></label>
+<label>Enter text<input id="entryEnterInput" type="text"></label>
+<label class="switch-row"><span>Show volume notice</span><input id="volumeNotice" type="checkbox"><span class="switch"></span></label>
+</div>
+</div>
+<div class="panel" id="panel-cards">
+<div class="section">
+<h2>Card layout</h2>
+<div class="layout-grid">
+<button class="layout-option" data-layout="classic"><span class="layout-preview classic"></span><b>Classic</b></button>
+<button class="layout-option" data-layout="wide"><span class="layout-preview wide"></span><b>Wide</b></button>
+<button class="layout-option" data-layout="minimal"><span class="layout-preview minimal"></span><b>Minimal</b></button>
+</div>
+</div>
+</div>
+<div class="panel" id="panel-apps">
+<div class="section">
+<div class="section-head"><h2>Applications</h2><button id="addAppBtn" class="small-btn">+ Add</button></div>
+<div id="appsList"></div>
+</div>
+</div>
+</div>
+<div class="preview-wrap">
+<div class="preview-label">LIVE PREVIEW</div>
+<div id="previewDevice" class="preview-device desktop">
+<div id="preview" class="preview">
+<video id="previewVideo" muted loop playsinline></video>
+<div id="previewShade"></div>
+<div id="previewGrain"></div>
+<div id="entryPreview" class="entry-preview">
+<div class="entry-title" id="previewEntryTitle"></div>
+<div class="entry-notice" id="previewEntryNotice"></div>
+<div class="entry-enter" id="previewEntryEnter"></div>
+<div class="entry-volume" id="previewEntryVolume"></div>
+</div>
+<div class="profile-card" id="profileCard">
+<img id="previewPfp" class="preview-pfp">
+<div class="preview-name" id="previewName"></div>
+<div class="preview-bio" id="previewBio"></div>
+<div class="preview-apps" id="previewApps"></div>
+</div>
+<div class="fake-cursor" id="fakeCursor"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<div id="toast"></div>
+<script src="javadiocaneahah.js"></script>
+</body>
+</html>
