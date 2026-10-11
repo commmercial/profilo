@@ -1,0 +1,31 @@
+name: Trim background video start
+
+on:
+  push:
+    paths:
+      - ".github/workflows/trim-background.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  trim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Trim first 65 seconds
+        run: |
+          ffmpeg -hide_banner -y -ss 65 -i background.mp4 -map 0:v:0 -map '0:a?' -c:v libx264 -preset medium -crf 22 -c:a aac -b:a 192k -movflags +faststart background-trimmed.mp4
+          mv background-trimmed.mp4 background.mp4
+      - name: Commit trimmed video
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add background.mp4
+          git commit -m "Trim first 65 seconds from background video" || exit 0
+          git push
