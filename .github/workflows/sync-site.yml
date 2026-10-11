@@ -1,0 +1,51 @@
+name: Sync profile site into profilo
+
+on:
+  push:
+    paths:
+      - ".github/workflows/sync-site.yml"
+      - "site-extras.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out profilo
+        uses: actions/checkout@v4
+
+      - name: Copy the public site repository
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/commmercial/-.git source-site
+          mkdir -p site
+          rsync -a --delete --exclude=".git" source-site/ site/
+          cp site-extras.js site/profile-extras.js
+          python3 - <<'PY'
+          from pathlib import Path
+          page = Path("site/index.html")
+          html = page.read_text(encoding="utf-8")
+          tag = '<script src="./profile-extras.js"></script>'
+          if tag not in html:
+              marker = "</body>"
+              if marker not in html:
+                  raise SystemExit("Could not find </body> in source index.html")
+              html = html.replace(marker, f"  {tag}\n{marker}", 1)
+              page.write_text(html, encoding="utf-8")
+          PY
+
+      - name: Commit the private mirror
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site
+          if git diff --cached --quiet; then
+            echo "The site mirror is already up to date."
+            exit 0
+          fi
+          git commit -m "Sync profile site and add custom features"
+          git push
