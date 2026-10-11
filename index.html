@@ -2129,6 +2129,12 @@
       }
     }
 
+
+    .tg-modal-username {
+      position: relative;
+      top: -6px;
+    }
+
 </style>
 
   <meta name="theme-color" content="#000000">
@@ -2538,7 +2544,7 @@
 
 </div>
 
-<script src="./script.js?v=20261011f"></script>
+<script src="./script.js?v=20261011g"></script>
 <script>
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") {
@@ -2554,7 +2560,7 @@ document.addEventListener("keydown", event => {
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js?v=20261004", {
+    navigator.serviceWorker.register("./sw.js?v=20261011g", {
       updateViaCache: "none"
     }).catch(() => {});
   });
