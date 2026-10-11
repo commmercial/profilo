@@ -1463,145 +1463,53 @@ const q75jfiei =
 const q76jfiei =
   blorboquery("#tgCopyToast");
 
-const telegramStatusText = blorboquery("#tgModalStatusText");
 const telegramAvatar = blorboquery("#tgModalAvatar");
-const telegramStatusIndicator = q72jfiei
-  ? q72jfiei.querySelector(".tg-status-indicator")
-  : null;
 
-async function loadTelegramProfile() {
-  try {
-    const response = await fetch(
-      "https://teleahhahfahf.onrender.com/api/telegram",
-      { cache: "no-store" }
-    );
-
-    if (!response.ok) {
-      throw new Error("Telegram profile request failed.");
-    }
-
-    const profile = await response.json();
-
-    if (profile.username && q75jfiei) {
-      q75jfiei.textContent = profile.username;
-    }
-
-    if (telegramStatusText) {
-      telegramStatusText.replaceChildren();
-
-      const timeDot = document.createElement("span");
-      timeDot.style.cssText = "display:inline-block;width:6px;height:6px;border-radius:50%;background:#229ED9;box-shadow:0 0 7px rgba(34,158,217,.7);vertical-align:middle;";
-      telegramStatusText.appendChild(timeDot);
-    }
-
-    if (telegramStatusIndicator) {
-      telegramStatusIndicator.style.backgroundColor =
-        profile.status === "online"
-          ? "#23a55a"
-          : profile.status === "status unavailable"
-            ? "#747f8d"
-            : "#229ED9";
-    }
-
-    if (telegramAvatar) {
-      telegramAvatar.onerror = () => {
-        telegramAvatar.onerror = null;
-        telegramAvatar.removeAttribute("src");
-      };
-      telegramAvatar.src =
-        "https://teleahhahfahf.onrender.com/api/telegram/photo?v=" + Date.now();
-    }
-  } catch {
-    if (telegramStatusText) {
-      telegramStatusText.textContent = "status unavailable";
-    }
-  }
+if (telegramAvatar) {
+  telegramAvatar.src = "./ak.png";
 }
 
-if (
-  q71jfiei &&
-  q72jfiei
-) {
-  q71jfiei.addEventListener(
-    "click",
-    () => {
-      q72jfiei.classList.add(
-        "visible"
-      );
-      loadTelegramProfile();
-    }
-  );
+if (q71jfiei && q72jfiei) {
+  q71jfiei.addEventListener("click", () => {
+    q72jfiei.classList.add("visible");
+  });
 }
 
-if (
-  q73jfiei &&
-  q72jfiei
-) {
-  q73jfiei.addEventListener(
-    "click",
-    () => {
-      q72jfiei.classList.remove(
-        "visible"
-      );
-    }
-  );
+if (q73jfiei && q72jfiei) {
+  q73jfiei.addEventListener("click", () => {
+    q72jfiei.classList.remove("visible");
+  });
 }
 
 if (q72jfiei) {
-  q72jfiei.addEventListener(
-    "click",
-    q125jfiei => {
-      if (
-        q125jfiei.target === q72jfiei
-      ) {
-        q72jfiei.classList.remove(
-          "visible"
-        );
-      }
+  q72jfiei.addEventListener("click", event => {
+    if (event.target === q72jfiei) {
+      q72jfiei.classList.remove("visible");
     }
-  );
+  });
 }
 
 if (q74jfiei) {
-  q74jfiei.addEventListener(
-    "click",
-    () => {
-      if (q72jfiei) {
-        q72jfiei.classList.remove(
-          "visible"
-        );
-      }
-
-      if (q71jfiei) {
-        q129Core(
-          q71jfiei.getAttribute(
-            "data-href"
-          ),
-          q71jfiei.getAttribute(
-            "data-name"
-          ),
-          q71jfiei.getAttribute(
-            "data-icon"
-          )
-        );
-      }
+  q74jfiei.addEventListener("click", () => {
+    if (q72jfiei) {
+      q72jfiei.classList.remove("visible");
     }
-  );
+
+    if (q71jfiei) {
+      q129Core(
+        q71jfiei.getAttribute("data-href"),
+        q71jfiei.getAttribute("data-name"),
+        q71jfiei.getAttribute("data-icon")
+      );
+    }
+  });
 }
 
 if (q75jfiei) {
-  q75jfiei.addEventListener(
-    "click",
-    () => {
-      q132Core(
-        q75jfiei.textContent,
-        q76jfiei
-      );
-    }
-  );
+  q75jfiei.addEventListener("click", () => {
+    q132Core(q75jfiei.textContent, q76jfiei);
+  });
 }
-
-
 
 
 const q77jfiei =
