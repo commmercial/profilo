@@ -255,22 +255,28 @@ function q123Core() {
   if (xjfxCore) {
     try {
       const startTrimmedVideo = async () => {
-        xjfxCore.pause();
         try {
-          xjfxCore.currentTime = 0;
+          xjfxCore.preload = "auto";
           xjfxCore.muted = false;
           xjfxCore.volume = fjrCore ? Number(fjrCore.value) : 1;
+
+          if (xjfxCore.readyState >= 1) {
+            xjfxCore.currentTime = 0;
+          } else {
+            xjfxCore.addEventListener("loadedmetadata", () => {
+              try {
+                xjfxCore.currentTime = 0;
+              } catch (q151jfiei) {}
+            }, { once: true });
+          }
+
           await xjfxCore.play();
         } catch (q151jfiei) {
           console.warn("Background video could not start:", q151jfiei);
         }
       };
 
-      if (xjfxCore.readyState >= 1) {
-        startTrimmedVideo();
-      } else {
-        xjfxCore.addEventListener("loadedmetadata", startTrimmedVideo, { once: true });
-      }
+      startTrimmedVideo();
     } catch (q151jfiei) {}
   }
 
