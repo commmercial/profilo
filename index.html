@@ -25,15 +25,6 @@
       }
       video.visible { opacity:1; }
     }
-    #intro {
-      position:fixed; inset:0; z-index:5;
-      display:none; place-items:center; align-content:center; gap:22px;
-      background:#000; color:#fff; font:500 16px system-ui,sans-serif;
-      letter-spacing:.04em; text-align:center;
-      transition:opacity .8s ease;
-    }
-    #intro.show { display:grid; }
-    #intro.hide { opacity:0; pointer-events:none; }
     #loading {
       position:fixed; inset:0; z-index:2; display:grid; place-items:center;
       color:#fff; background:#000; font:14px system-ui,sans-serif;
@@ -43,15 +34,13 @@
   </style>
 </head>
 <body>
-  <div id="intro"><div>Turn phone sideways</div></div>
   <div id="loading">Loading</div>
   <video id="video" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
   <script>
     const video = document.getElementById("video");
-    const intro = document.getElementById("intro");
     const loading = document.getElementById("loading");
     const mobile = matchMedia("(max-width: 900px) and (pointer: coarse)").matches;
-    let introFinished = !mobile;
+    let introFinished = true;
     let videoReady = false;
     let audioUnlocked = false;
 
@@ -98,18 +87,11 @@
     }
 
     if (mobile) {
-      intro.classList.add("show");
-
-      setTimeout(() => {
-        introFinished = true;
-        intro.classList.add("hide");
-        setTimeout(() => intro.remove(), 850);
-        if (!video.paused) video.play().catch(() => {});
-        revealVideo();
-      }, 3000);
+      revealVideo();
     } else {
       video.classList.add("visible");
     }
+
 
     // A real tap/click anywhere enables sound on iPhone and Android browsers.
     document.addEventListener("click", startWithSound, { capture:true });
