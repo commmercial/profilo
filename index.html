@@ -78,10 +78,14 @@
     video.addEventListener("error", () => { loading.textContent = "Video unavailable"; });
 
     async function startWithSound() {
-      audioUnlocked = true;
       video.muted = false;
-      try { await video.play(); }
-      catch (_) { video.muted = true; }
+      try {
+        await video.play();
+        audioUnlocked = true;
+      } catch (_) {
+        video.muted = true;
+        audioUnlocked = false;
+      }
     }
 
     async function loadVideo() {
@@ -103,8 +107,8 @@
       intro.classList.add("show");
       // Any tap during the 3-second intro unlocks sound; no button is shown.
       document.addEventListener("pointerdown", () => {
-        if (!audioUnlocked) startWithSound();
-      }, { once:true });
+        if (!audioUnlocked && video.src) startWithSound();
+      });
       setTimeout(() => {
         introFinished = true;
         intro.classList.add("hide");
@@ -122,8 +126,8 @@
     // If sound was not unlocked during the intro, a later first tap enables it.
     if (mobile) {
       document.addEventListener("pointerdown", () => {
-        if (!audioUnlocked) startWithSound();
-      }, { once:true });
+        if (!audioUnlocked && video.src) startWithSound();
+      });
     }
     loadVideo();
   </script>
