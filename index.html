@@ -21,11 +21,19 @@
       top: 50%;
       left: 50%;
       display: block;
-      width: 100dvh;
-      height: 100vw;
-      transform: translate(-50%, -50%) rotate(90deg);
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      transform: translate(-50%, -50%);
       object-fit: fill;
       background: #000;
+    }
+    @media (max-width: 768px) {
+      video {
+        width: 100dvh;
+        height: 100vw;
+        transform: translate(-50%, -50%) rotate(90deg);
+      }
     }
     #loading {
       position: fixed;
