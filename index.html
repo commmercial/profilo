@@ -18,9 +18,9 @@
     }
     @media (max-width: 900px) and (pointer: coarse) {
       video {
-        width:100dvh; height:100vw;
-        transform:translate(-50%,-50%) rotate(90deg);
-        object-fit:cover;
+        width:100vw; height:100dvh;
+        transform:translate(-50%,-50%);
+        object-fit:contain;
         opacity:0;
       }
       video.visible { opacity:1; }
@@ -67,14 +67,19 @@
     video.addEventListener("error", () => { loading.textContent = "Video unavailable"; });
 
     function startWithSound() {
-      if (!video.src || audioUnlocked) return;
+      // iOS Safari needs play() called directly inside a user gesture.
+      if (!video.src) return;
+      video.defaultMuted = false;
       video.muted = false;
-      video.play().then(() => {
+      video.removeAttribute("muted");
+      video.volume = 1;
+      const attempt = video.play();
+      if (attempt && typeof attempt.then === "function") {
+        attempt.then(() => { audioUnlocked = true; })
+          .catch(() => { audioUnlocked = false; });
+      } else {
         audioUnlocked = true;
-      }).catch(() => {
-        video.muted = true;
-        audioUnlocked = false;
-      });
+      }
     }
 
     async function loadVideo() {
@@ -106,8 +111,9 @@
       video.classList.add("visible");
     }
 
-    // One tap anywhere after the video has loaded enables audio on iPhone.
-    document.addEventListener("pointerdown", startWithSound, { capture:true });
+    // A real tap/click anywhere enables sound on iPhone and Android browsers.
+    document.addEventListener("click", startWithSound, { capture:true });
+    document.addEventListener("touchend", startWithSound, { capture:true, passive:true });
     loadVideo();
   </script>
 </body>
