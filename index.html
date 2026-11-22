@@ -39,23 +39,6 @@
       transition: opacity .2s ease;
     }
     #loading.hidden { opacity: 0; pointer-events: none; }
-    #pause {
-      display: none;
-      position: fixed;
-      z-index: 3;
-      right: max(16px, env(safe-area-inset-right));
-      bottom: max(16px, env(safe-area-inset-bottom));
-      border: 1px solid rgba(255,255,255,.35);
-      border-radius: 999px;
-      padding: 10px 16px;
-      color: #fff;
-      background: rgba(0,0,0,.55);
-      font: 13px system-ui, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-    @media (hover: none), (max-width: 768px) {
-      #pause { display: block; }
-    }
   </style>
 </head>
 <body>
@@ -63,11 +46,10 @@
   <video id="bg" autoplay muted loop playsinline webkit-playsinline preload="auto">
     <source src="./background.mp4" type="video/mp4">
   </video>
-  <button id="pause" type="button" aria-label="Pause video">Pause</button>
   <script>
     const video = document.getElementById("bg");
     const loading = document.getElementById("loading");
-    const pause = document.getElementById("pause");
+    let soundEnabled = false;
 
     function hideLoading() {
       loading.classList.add("hidden");
@@ -80,28 +62,34 @@
       loading.textContent = "Video unavailable";
     });
 
-    video.play().catch(() => {
-      // Autoplay with sound is blocked by many browsers; muted autoplay is attempted above.
-    });
+    video.play().catch(() => {});
 
-    // Tap the video to toggle audio; playback starts muted so autoplay is allowed.
-    video.addEventListener("click", () => {
-      video.muted = !video.muted;
-    });
-
-    pause.addEventListener("click", async () => {
-      if (video.paused) {
-        try {
-          await video.play();
-          pause.textContent = "Pause";
-          pause.setAttribute("aria-label", "Pause video");
-        } catch (_) {}
-      } else {
-        video.pause();
-        pause.textContent = "Play";
-        pause.setAttribute("aria-label", "Play video");
+    // Mobile browsers block autoplay with sound. The first tap enables audio.
+    async function enableSound() {
+      if (soundEnabled) return;
+      soundEnabled = true;
+      video.muted = false;
+      try {
+        await video.play();
+      } catch (_) {
+        video.muted = true;
+        soundEnabled = false;
       }
-    });
+      document.removeEventListener("pointerdown", enableSound);
+      document.removeEventListener("click", enableSound);
+    }
+    document.addEventListener("pointerdown", enableSound, { once: true });
+    document.addEventListener("click", enableSound, { once: true });
+
+    // Request landscape where the browser supports orientation locking.
+    async function requestLandscape() {
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock("landscape");
+        }
+      } catch (_) {}
+    }
+    document.addEventListener("pointerdown", requestLandscape, { once: true });
   </script>
 </body>
 </html>
