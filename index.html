@@ -31,14 +31,28 @@
       transition:opacity .4s ease; pointer-events:none;
     }
     #loading.hide { opacity:0; }
+    #soundGate {
+      position:fixed; inset:0; z-index:4; display:none;
+      align-items:center; justify-content:center;
+      background:transparent; border:0; padding:20px;
+      color:#fff; font:500 15px system-ui,sans-serif;
+      text-shadow:0 1px 5px #000; cursor:pointer;
+    }
+    #soundGate.show { display:flex; }
+    #soundGate span {
+      padding:12px 18px; border-radius:999px;
+      background:rgba(0,0,0,.65); border:1px solid rgba(255,255,255,.55);
+    }
   </style>
 </head>
 <body>
   <div id="loading">Loading</div>
   <video id="video" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
+  <button id="soundGate" type="button" aria-label="Enable video sound"><span>Tap to enable sound</span></button>
   <script>
     const video = document.getElementById("video");
     const loading = document.getElementById("loading");
+    const soundGate = document.getElementById("soundGate");
     const mobile = matchMedia("(max-width: 900px) and (pointer: coarse)").matches;
     let introFinished = true;
     let videoReady = false;
@@ -51,23 +65,32 @@
       setTimeout(() => loading.remove(), 450);
     }
 
-    video.addEventListener("canplay", () => { videoReady = true; revealVideo(); }, { once:true });
+    video.addEventListener("canplay", () => {
+      videoReady = true;
+      revealVideo();
+      if (!audioUnlocked) soundGate.classList.add("show");
+    }, { once:true });
     video.addEventListener("playing", () => { videoReady = true; revealVideo(); }, { once:true });
     video.addEventListener("error", () => { loading.textContent = "Video unavailable"; });
 
     function startWithSound() {
-      // iOS Safari needs play() called directly inside a user gesture.
-      if (!video.src) return;
-      video.defaultMuted = false;
+      // Sound playback must be started directly by a user tap on iOS.
       video.muted = false;
+      video.defaultMuted = false;
       video.removeAttribute("muted");
       video.volume = 1;
       const attempt = video.play();
       if (attempt && typeof attempt.then === "function") {
-        attempt.then(() => { audioUnlocked = true; })
-          .catch(() => { audioUnlocked = false; });
+        attempt.then(() => {
+          audioUnlocked = true;
+          soundGate.classList.remove("show");
+        }).catch(() => {
+          audioUnlocked = false;
+          soundGate.classList.add("show");
+        });
       } else {
         audioUnlocked = true;
+        soundGate.classList.remove("show");
       }
     }
 
@@ -93,9 +116,9 @@
     }
 
 
-    // A real tap/click anywhere enables sound on iPhone and Android browsers.
-    document.addEventListener("click", startWithSound, { capture:true });
-    document.addEventListener("touchend", startWithSound, { capture:true, passive:true });
+    // A visible sound prompt provides a direct, reliable user gesture on iPhone.
+    soundGate.addEventListener("click", startWithSound);
+    soundGate.addEventListener("touchend", startWithSound, { passive:true });
     loadVideo();
   </script>
 </body>
