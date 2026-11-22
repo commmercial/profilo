@@ -84,6 +84,11 @@
       // Autoplay with sound is blocked by many browsers; muted autoplay is attempted above.
     });
 
+    // Tap the video to toggle audio; playback starts muted so autoplay is allowed.
+    video.addEventListener("click", () => {
+      video.muted = !video.muted;
+    });
+
     pause.addEventListener("click", async () => {
       if (video.paused) {
         try {
