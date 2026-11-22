@@ -2,31 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <link rel="icon" href="data:,">
   <title></title>
   <style>
+    * { box-sizing: border-box; }
     html, body {
       width: 100%;
       height: 100%;
+      min-height: 100%;
       margin: 0;
       overflow: hidden;
       background: #000;
     }
     video {
+      position: fixed;
+      inset: 0;
       display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      object-fit: fill;
       background: #000;
+    }
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #000;
+      font: 14px system-ui, sans-serif;
+      letter-spacing: .04em;
+      z-index: 2;
+      transition: opacity .2s ease;
+    }
+    #loading.hidden { opacity: 0; pointer-events: none; }
+    #pause {
+      display: none;
+      position: fixed;
+      z-index: 3;
+      right: max(16px, env(safe-area-inset-right));
+      bottom: max(16px, env(safe-area-inset-bottom));
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: #fff;
+      background: rgba(0,0,0,.55);
+      font: 13px system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (hover: none), (max-width: 768px) {
+      #pause { display: block; }
     }
   </style>
 </head>
 <body>
-  <video controls playsinline preload="auto">
+  <div id="loading">Loading</div>
+  <video id="bg" autoplay muted loop playsinline webkit-playsinline preload="auto">
     <source src="./background.mp4" type="video/mp4">
-    Your browser does not support HTML video.
   </video>
+  <button id="pause" type="button" aria-label="Pause video">Pause</button>
+  <script>
+    const video = document.getElementById("bg");
+    const loading = document.getElementById("loading");
+    const pause = document.getElementById("pause");
+
+    function hideLoading() {
+      loading.classList.add("hidden");
+      window.setTimeout(() => loading.remove(), 250);
+    }
+
+    video.addEventListener("canplay", hideLoading, { once: true });
+    video.addEventListener("playing", hideLoading, { once: true });
+    video.addEventListener("error", () => {
+      loading.textContent = "Video unavailable";
+    });
+
+    video.play().catch(() => {
+      // Autoplay with sound is blocked by many browsers; muted autoplay is attempted above.
+    });
+
+    pause.addEventListener("click", async () => {
+      if (video.paused) {
+        try {
+          await video.play();
+          pause.textContent = "Pause";
+          pause.setAttribute("aria-label", "Pause video");
+        } catch (_) {}
+      } else {
+        video.pause();
+        pause.textContent = "Play";
+        pause.setAttribute("aria-label", "Play video");
+      }
+    });
+  </script>
 </body>
 </html>
