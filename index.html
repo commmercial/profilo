@@ -18,11 +18,12 @@
     }
     video {
       position: fixed;
-      inset: 0;
+      top: 50%;
+      left: 50%;
       display: block;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
+      width: 100dvh;
+      height: 100vw;
+      transform: translate(-50%, -50%) rotate(90deg);
       object-fit: fill;
       background: #000;
     }
@@ -75,21 +76,9 @@
         video.muted = true;
         soundEnabled = false;
       }
-      document.removeEventListener("pointerdown", enableSound);
-      document.removeEventListener("click", enableSound);
     }
     document.addEventListener("pointerdown", enableSound, { once: true });
     document.addEventListener("click", enableSound, { once: true });
-
-    // Request landscape where the browser supports orientation locking.
-    async function requestLandscape() {
-      try {
-        if (screen.orientation && screen.orientation.lock) {
-          await screen.orientation.lock("landscape");
-        }
-      } catch (_) {}
-    }
-    document.addEventListener("pointerdown", requestLandscape, { once: true });
   </script>
 </body>
 </html>
