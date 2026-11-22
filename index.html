@@ -20,6 +20,7 @@
       video {
         width:100dvh; height:100vw;
         transform:translate(-50%,-50%) rotate(90deg);
+        object-fit:cover;
         opacity:0;
       }
       video.visible { opacity:1; }
@@ -77,15 +78,15 @@
     video.addEventListener("playing", () => { videoReady = true; revealVideo(); }, { once:true });
     video.addEventListener("error", () => { loading.textContent = "Video unavailable"; });
 
-    async function startWithSound() {
+    function startWithSound() {
+      if (!video.src || audioUnlocked) return;
       video.muted = false;
-      try {
-        await video.play();
+      video.play().then(() => {
         audioUnlocked = true;
-      } catch (_) {
+      }).catch(() => {
         video.muted = true;
         audioUnlocked = false;
-      }
+      });
     }
 
     async function loadVideo() {
@@ -105,30 +106,19 @@
 
     if (mobile) {
       intro.classList.add("show");
-      // Any tap during the 3-second intro unlocks sound; no button is shown.
-      document.addEventListener("pointerdown", () => {
-        if (!audioUnlocked && video.src) startWithSound();
-      });
+      // A tap anywhere after the video has loaded unlocks audio; no button is shown.
+      document.addEventListener("pointerdown", startWithSound);
       setTimeout(() => {
         introFinished = true;
         intro.classList.add("hide");
         setTimeout(() => intro.remove(), 850);
-        if (!audioUnlocked) {
-          video.muted = false;
-          video.play().catch(() => { video.muted = true; video.play().catch(() => {}); });
-        }
+        if (!video.paused) video.play().catch(() => {});
         revealVideo();
       }, 3000);
     } else {
       video.classList.add("visible");
     }
 
-    // If sound was not unlocked during the intro, a later first tap enables it.
-    if (mobile) {
-      document.addEventListener("pointerdown", () => {
-        if (!audioUnlocked && video.src) startWithSound();
-      });
-    }
     loadVideo();
   </script>
 </body>
