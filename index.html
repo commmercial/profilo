@@ -34,18 +34,6 @@
     }
     #intro.show { display:grid; }
     #intro.hide { opacity:0; pointer-events:none; }
-    .phone {
-      width:34px; height:58px; border:2px solid #fff; border-radius:7px;
-      position:relative; animation:turnPhone .7s ease-in-out 1 forwards;
-    }
-    .phone:after {
-      content:""; position:absolute; width:8px; height:2px;
-      border-radius:2px; background:#fff; bottom:4px; left:11px;
-    }
-    @keyframes turnPhone {
-      from { transform:rotate(0deg); }
-      to { transform:rotate(90deg); }
-    }
     #loading {
       position:fixed; inset:0; z-index:2; display:grid; place-items:center;
       color:#fff; background:#000; font:14px system-ui,sans-serif;
@@ -55,7 +43,7 @@
   </style>
 </head>
 <body>
-  <div id="intro"><div class="phone" aria-hidden="true"></div><div>Turn phone sideways</div></div>
+  <div id="intro"><div>Turn phone sideways</div></div>
   <div id="loading">Loading</div>
   <video id="video" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
   <script>
@@ -106,8 +94,7 @@
 
     if (mobile) {
       intro.classList.add("show");
-      // A tap anywhere after the video has loaded unlocks audio; no button is shown.
-      document.addEventListener("pointerdown", startWithSound);
+
       setTimeout(() => {
         introFinished = true;
         intro.classList.add("hide");
@@ -119,6 +106,8 @@
       video.classList.add("visible");
     }
 
+    // One tap anywhere after the video has loaded enables audio on iPhone.
+    document.addEventListener("pointerdown", startWithSound, { capture:true });
     loadVideo();
   </script>
 </body>
