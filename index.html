@@ -25,65 +25,54 @@
       }
       video.visible { opacity:1; }
     }
-    #loading {
-      position:fixed; inset:0; z-index:2; display:grid; place-items:center;
-      color:#fff; background:#000; font:14px system-ui,sans-serif;
-      transition:opacity .4s ease; pointer-events:none;
+    #start-screen {
+      position:fixed; inset:0; z-index:3; display:grid; place-items:center;
+      background:rgba(0,0,0,.48); transition:opacity .3s ease;
     }
-    #loading.hide { opacity:0; }
-    #sound-toggle {
-      position:fixed; z-index:3; right:20px; bottom:20px;
-      border:1px solid rgba(255,255,255,.35); border-radius:999px;
-      padding:10px 14px; color:#fff; background:rgba(0,0,0,.65);
-      font:14px system-ui,sans-serif; cursor:pointer;
+    #start-screen.hidden { opacity:0; pointer-events:none; }
+    #play-button {
+      border:1px solid rgba(255,255,255,.55); border-radius:999px;
+      padding:14px 24px; color:#fff; background:rgba(0,0,0,.72);
+      font:16px system-ui,sans-serif; cursor:pointer;
     }
-    #sound-toggle:focus-visible { outline:2px solid #fff; outline-offset:3px; }
+    #play-button:disabled { opacity:.7; cursor:wait; }
+    #play-button:focus-visible { outline:2px solid #fff; outline-offset:4px; }
   </style>
 </head>
 <body>
-  <div id="loading">Loading</div>
-  <video id="video" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
-  <button id="sound-toggle" type="button" aria-pressed="false">Enable sound</button>
+  <div id="start-screen">
+    <button id="play-button" type="button" disabled>Loading video…</button>
+  </div>
+  <video id="video" loop playsinline webkit-playsinline preload="auto"></video>
   <script>
     const video = document.getElementById("video");
-    const loading = document.getElementById("loading");
-    const mobile = matchMedia("(max-width: 900px) and (pointer: coarse)").matches;
-    let introFinished = true;
+    const startScreen = document.getElementById("start-screen");
+    const playButton = document.getElementById("play-button");
     let videoReady = false;
-
-    function revealVideo() {
-      if (!introFinished || !videoReady) return;
-      video.classList.add("visible");
-      loading.classList.add("hide");
-      setTimeout(() => loading.remove(), 450);
-    }
 
     video.addEventListener("canplay", () => {
       videoReady = true;
-      revealVideo();
+      video.classList.add("visible");
+      playButton.disabled = false;
+      playButton.textContent = "Play video";
     }, { once:true });
-    video.addEventListener("playing", () => { videoReady = true; revealVideo(); }, { once:true });
-    video.addEventListener("error", () => { loading.textContent = "Video unavailable"; });
+    video.addEventListener("error", () => {
+      playButton.textContent = "Video unavailable";
+      playButton.disabled = true;
+    });
 
-    const soundToggle = document.getElementById("sound-toggle");
-
-    soundToggle.addEventListener("click", async () => {
-      const enableSound = video.muted;
-      video.muted = !enableSound;
-      video.defaultMuted = !enableSound;
+    playButton.addEventListener("click", () => {
+      if (!videoReady) return;
+      video.muted = false;
+      video.defaultMuted = false;
+      video.removeAttribute("muted");
       video.volume = 1;
-      soundToggle.textContent = enableSound ? "Mute" : "Enable sound";
-      soundToggle.setAttribute("aria-pressed", String(enableSound));
-      if (enableSound) {
-        try {
-          await video.play();
-        } catch (_) {
-          video.muted = true;
-          video.defaultMuted = true;
-          soundToggle.textContent = "Enable sound";
-          soundToggle.setAttribute("aria-pressed", "false");
-        }
-      }
+      const playback = video.play();
+      startScreen.classList.add("hidden");
+      playback.catch(() => {
+        startScreen.classList.remove("hidden");
+        playButton.textContent = "Tap to play";
+      });
     });
 
     async function loadVideo() {
@@ -91,25 +80,17 @@
         const response = await fetch("https://api.github.com/repos/commmercial/profilo/contents/?ref=main");
         if (!response.ok) throw new Error("Repository listing failed");
         const files = await response.json();
-        const mp4 = files.find(file => file.type === "file" && /\.mp4$/i.test(file.name));
+        const mp4 = files.find(file => file.type === "file" && /\\.mp4$/i.test(file.name));
         if (!mp4) throw new Error("No MP4 found in repository root");
         video.src = "./" + encodeURIComponent(mp4.name);
         video.load();
-        video.play().catch(() => {});
       } catch (_) {
-        loading.textContent = "Video unavailable";
+        playButton.textContent = "Video unavailable";
+        playButton.disabled = true;
       }
     }
 
-    if (mobile) {
-      revealVideo();
-    } else {
-      video.classList.add("visible");
-    }
-
-
-
     loadVideo();
-  </script>
+  </script>>
 </body>
 </html>
