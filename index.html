@@ -62,14 +62,23 @@
     const startScreen = document.getElementById("start-screen");
     const playButton = document.getElementById("play-button");
     let videoReady = false;
+    let mediaCanPlay = false;
+    const minimumLoadingMs = 5000;
+    const loadingStartedAt = performance.now();
 
     video.addEventListener("canplay", () => {
-      videoReady = true;
-      video.classList.add("visible");
-      playButton.disabled = false;
-      playButton.textContent = "Play video";
+      mediaCanPlay = true;
+      const remainingLoadingMs = Math.max(0, minimumLoadingMs - (performance.now() - loadingStartedAt));
+      window.setTimeout(() => {
+        if (!mediaCanPlay) return;
+        videoReady = true;
+        video.classList.add("visible");
+        playButton.disabled = false;
+        playButton.textContent = "Play video";
+      }, remainingLoadingMs);
     }, { once:true });
     video.addEventListener("error", () => {
+      mediaCanPlay = false;
       playButton.textContent = "Video unavailable";
       playButton.disabled = true;
     });
