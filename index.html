@@ -27,16 +27,29 @@
     }
     #start-screen {
       position:fixed; inset:0; z-index:3; display:grid; place-items:center;
-      background:rgba(0,0,0,.48); transition:opacity .3s ease;
+      background:rgba(0,0,0,.48); transition:opacity 1.2s ease;
     }
     #start-screen.hidden { opacity:0; pointer-events:none; }
     #play-button {
-      border:1px solid rgba(255,255,255,.55); border-radius:999px;
-      padding:14px 24px; color:#fff; background:rgba(0,0,0,.72);
-      font:16px system-ui,sans-serif; cursor:pointer;
+      border:2px outset #d8e4f0; border-radius:0;
+      padding:12px 28px; color:#fff;
+      background:linear-gradient(#4f85bd,#17436f);
+      box-shadow:inset 1px 1px 0 rgba(255,255,255,.45), 2px 2px 0 #111;
+      font:bold 16px Arial,sans-serif; text-shadow:1px 1px #17334f;
+      cursor:pointer;
     }
-    #play-button:disabled { opacity:.7; cursor:wait; }
+    #play-button:hover:not(:disabled) { background:linear-gradient(#659bd1,#255987); }
+    #play-button:active:not(:disabled) { border-style:inset; }
+    #play-button:disabled { opacity:.8; cursor:wait; }
+    #play-button:disabled::after {
+      content:""; display:block; height:6px; margin-top:9px;
+      border:1px solid #b5c6d6;
+      background:repeating-linear-gradient(90deg,#b5c6d6 0 12px,#31577c 12px 24px);
+      background-size:48px 100%;
+      animation:loading-stripes 2.4s linear infinite;
+    }
     #play-button:focus-visible { outline:2px solid #fff; outline-offset:4px; }
+    @keyframes loading-stripes { to { background-position:48px 0; } }
   </style>
 </head>
 <body>
