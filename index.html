@@ -80,7 +80,7 @@
         const response = await fetch("https://api.github.com/repos/commmercial/profilo/contents/?ref=main");
         if (!response.ok) throw new Error("Repository listing failed");
         const files = await response.json();
-        const mp4 = files.find(file => file.type === "file" && /\\.mp4$/i.test(file.name));
+        const mp4 = files.find(file => file.type === "file" && /\.mp4$/i.test(file.name));
         if (!mp4) throw new Error("No MP4 found in repository root");
         video.src = "./" + encodeURIComponent(mp4.name);
         video.load();
